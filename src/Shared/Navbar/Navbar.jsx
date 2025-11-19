@@ -1,9 +1,12 @@
 import React from "react";
-import { NavLink } from "react-router";
+import { Link, NavLink } from "react-router";
 import Logo from "../../Components/Logo/Logo";
 import Container from "../Container/Container";
+import useAuth from "../../Firebase/useaAuth/useAuth";
 
 const Navbar = () => {
+  const { user, signOutUser } = useAuth();
+
   const links = (
     <>
       <li>
@@ -17,6 +20,12 @@ const Navbar = () => {
       </li>
     </>
   );
+
+  const handleSignOut = () => {
+    signOutUser()
+      .then()
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Container>
@@ -57,7 +66,15 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{links}</ul>
         </div>
         <div className="navbar-end">
-          <a className="btn">Button</a>
+          {user ? (
+            <Link onClick={handleSignOut} className="btn">
+              LogOut
+            </Link>
+          ) : (
+            <Link to={"/login"} className="btn">
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </Container>
