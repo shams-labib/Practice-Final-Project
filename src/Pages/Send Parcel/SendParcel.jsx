@@ -1,18 +1,52 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import useAuth from "../../Firebase/useaAuth/useAuth";
+import { useLoaderData } from "react-router";
 
 const SendParcel = () => {
   const { user } = useAuth();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm();
 
+  const serviceCenter = useLoaderData();
+  const regionsDuplicate = serviceCenter.map((c) => c.region);
+  const regions = [...new Set(regionsDuplicate)];
+  const senderRegion = useWatch({ control, name: "senderRegion" });
+  const receiverRegion = useWatch({ control, name: "receiverRegion" });
+
+  // ebar ekhane just district ta dhorar jonno ei function ta calabo
+
+  const districtByRegion = (regions) => {
+    const regionsDistrict = serviceCenter.filter((d) => d.region === regions);
+    const district = regionsDistrict.map((c) => c.district);
+    return district;
+  };
+
   const handleSubmitForm = (data) => {
-    console.log(data);
+    const isDocument = data.parcelType === "document";
+    const isSameDistrict = data.senderDistrict === data.receiverDistrict;
+    const parcelWeight = parseFloat(data.parcelWeight);
+
+    let cost = 0;
+    if (isDocument) {
+      cost = isSameDistrict ? 60 : 80;
+    } else {
+      if (parcelWeight < 3) {
+        cost = isSameDistrict ? 110 : 150;
+      } else {
+        const minimumCharge = isSameDistrict ? 110 : 150;
+        const extraWeight = parcelWeight - 3;
+        const extraCharge = isSameDistrict
+          ? extraWeight * 40
+          : extraWeight * 40 + 40;
+        cost = minimumCharge + extraCharge;
+      }
+    }
+    console.log("cost", cost);
   };
 
   return (
@@ -45,23 +79,25 @@ const SendParcel = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <fieldset className="fieldset">
-            <label class="label font-semibold text-[14px]">Parcel Name</label>
+            <label className="label font-semibold text-[14px]">
+              Parcel Name
+            </label>
             <input
               type="text"
               {...register("parcelName")}
-              class="input outline-none w-full"
+              className="input outline-none w-full"
               placeholder="Parcel Name"
             />
           </fieldset>
           <fieldset className="fieldset">
-            <label class="label font-semibold text-[14px]">
+            <label className="label font-semibold text-[14px]">
               {" "}
               Parcel Weight (KG)
             </label>
             <input
               type="text"
               {...register("parcelWeight")}
-              class="input outline-none w-full"
+              className="input outline-none w-full"
               placeholder="Parcel Weight (KG)"
             />
           </fieldset>
@@ -108,9 +144,11 @@ const SendParcel = () => {
                 <option value="default" disabled>
                   Pick a Region
                 </option>
-                <option value="dhaka">Dhaka</option>
-                <option value="chattogram">Chattogram</option>
-                <option value="rajshahi">Rajshahi</option>
+                {regions.map((r, index) => (
+                  <option key={index} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
               <span className="label">Optional</span>
             </fieldset>
@@ -127,8 +165,11 @@ const SendParcel = () => {
                 <option value="default" disabled>
                   Pick a district
                 </option>
-                <option value="dhaka">Dhaka</option>
-                <option value="gazipur">Gazipur</option>
+                {districtByRegion(senderRegion).map((d, index) => (
+                  <option key={index} value={d}>
+                    {d}
+                  </option>
+                ))}
               </select>
 
               <span className="label">Optional</span>
@@ -189,9 +230,12 @@ const SendParcel = () => {
                 <option value="default" disabled>
                   Pick a Region
                 </option>
-                <option value="dhaka">Dhaka</option>
-                <option value="chattogram">Chattogram</option>
-                <option value="rajshahi">Rajshahi</option>
+
+                {regions.map((r, index) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
               <span className="label">Optional</span>
             </fieldset>
@@ -208,8 +252,12 @@ const SendParcel = () => {
                 <option value="default" disabled>
                   Pick a district
                 </option>
-                <option value="dhaka">Dhaka</option>
-                <option value="gazipur">Gazipur</option>
+
+                {districtByRegion(receiverRegion).map((d, index) => (
+                  <option value={d} key={index}>
+                    {d}
+                  </option>
+                ))}
               </select>
 
               <span className="label">Optional</span>
