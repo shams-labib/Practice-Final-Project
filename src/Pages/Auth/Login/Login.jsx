@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../Firebase/useaAuth/useAuth";
 import { Link, useNavigate } from "react-router";
+import SocialLogin from "../Social Login/SocialLogin";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -76,6 +77,7 @@ const Login = () => {
             </h1>
           </fieldset>
         </form>
+        <SocialLogin></SocialLogin>
       </div>
     </div>
   );
