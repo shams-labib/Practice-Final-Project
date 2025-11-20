@@ -20,9 +20,14 @@ const Navbar = () => {
       </li>
 
       {user && (
-        <li>
-          <NavLink to={"/send-parcel"}>Send Parcel</NavLink>
-        </li>
+        <div className="flex">
+          <li>
+            <NavLink to={"/send-parcel"}>Send Parcel</NavLink>
+          </li>
+          <li>
+            <NavLink to={"/dashboard/my-parcel"}>My Parcel</NavLink>
+          </li>
+        </div>
       )}
     </>
   );

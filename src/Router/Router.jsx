@@ -7,6 +7,8 @@ import Login from "../Pages/Auth/Login/Login";
 import Register from "../Pages/Auth/Register/Register";
 import PrivateLayout from "../Layout/PrivateLayout/PrivateLayout";
 import SendParcel from "../Pages/Send Parcel/SendParcel";
+import DashboardLayout from "../Layout/DashboardLayout";
+import My_parcel from "../Pages/Dashboard/my_parcel";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +49,21 @@ export const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register></Register>,
+      },
+    ],
+  },
+
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateLayout>
+        <DashboardLayout></DashboardLayout>
+      </PrivateLayout>
+    ),
+    children: [
+      {
+        path: "my-parcel",
+        element: <My_parcel></My_parcel>,
       },
     ],
   },
